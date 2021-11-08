@@ -1,4 +1,4 @@
-package agh.cs;
+package agh.cs.task1;
 
 import java.util.HashSet;
 import java.util.concurrent.locks.Condition;
