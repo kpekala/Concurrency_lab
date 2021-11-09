@@ -18,9 +18,9 @@ public class Guest extends Thread {
     public void run() {
         doStuff();
         try {
-            System.out.println("Client " + id + " is stating requesting");
+            waiter.print("Client " + id + " is stating requesting");
             waiter.request(id);
-            System.out.println("Client " + id + " is finishing requesting");
+            waiter.print("Client " + id + " is finishing requesting");
             eat();
             waiter.leave(id);
         } catch (InterruptedException e) {
@@ -29,10 +29,10 @@ public class Guest extends Thread {
     }
 
     private void eat() throws InterruptedException {
-        System.out.println("Client " + id + " is starting eating");
+        waiter.print("Client " + id + " is starting eating");
         Random r = new Random();
         sleep(r.nextInt(500) + 100);
-        System.out.println("Client " + id + " is finishing eating");
+        waiter.print("Client " + id + " is finishing eating");
     }
 
     private void doStuff() {

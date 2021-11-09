@@ -5,11 +5,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Pair {
-    private int evenId;
+    public int id;
     public Lock lock = new ReentrantLock();
-    public Condition occupying = lock.newCondition();
-    public Pair(int evenId){
-        //this.evenId = evenId;
+    public Condition calling = lock.newCondition();
+    public Condition twoClientsReserving = lock.newCondition();
+    public Pair(int id){
+        this.id = id;
     }
     public Pair(){
 
