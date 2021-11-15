@@ -8,12 +8,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Waiter {
     public final int MAX_PAIRS = 10;
-    private boolean[] clients_requesting = new boolean[MAX_PAIRS*2];
-    private boolean[] clients_eating = new boolean[MAX_PAIRS*2];
-    private Pair[] pairs = new Pair[MAX_PAIRS];
+    private final boolean[] clients_requesting = new boolean[MAX_PAIRS*2];
+    private final boolean[] clients_eating = new boolean[MAX_PAIRS*2];
+    private final Pair[] pairs = new Pair[MAX_PAIRS];
     private boolean tableOccupied = false;
-    private Lock mainLock = new ReentrantLock();
-    private Condition reserved = mainLock.newCondition();
+    private final Lock mainLock = new ReentrantLock();
+    private final Condition reserved = mainLock.newCondition();
 
     private int currentId = -1;
 
@@ -91,7 +91,6 @@ public class Waiter {
             mainLock.unlock();
         }
         pair.lock.unlock();
-
     }
     private Pair getPair(int clientId){
         int pairId = evenId(clientId)/2;
@@ -105,6 +104,6 @@ public class Waiter {
     }
 
     public synchronized void print(String message){
-        System.out.println(message + ", time: " + System.nanoTime());
+        System.out.println(message);
     }
 }
