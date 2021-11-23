@@ -7,15 +7,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class Main extends JFrame {
 
-    private static int threadsNumber = 3;
-    private static int tasksNumber = 4;
+    private static final int threadsNumber = 5;
+    private static final int tasksNumber = 100;
     public static int SCREEN_WIDTH = 800;
     public static int SCREEN_HEIGHT = 600;
     private BufferedImage image;
@@ -23,6 +20,7 @@ public class Main extends JFrame {
     public Main() throws ExecutionException, InterruptedException {
         prepareView();
         startSimulation();
+        //pixelTask();
     }
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -53,6 +51,24 @@ public class Main extends JFrame {
                 System.out.println(point.value);
                 image.setRGB(point.x,point.y,point.value);
             }
+        }
+    }
+
+    private void pixelTask() throws ExecutionException, InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(threadsNumber);
+        Set<Future<ValuedPoint>> tasksSet = new HashSet<>();
+
+        Mandelbrot mandelbrot = new Mandelbrot(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        for(int x=0; x<SCREEN_WIDTH; x++){
+            for(int y=0; y<SCREEN_HEIGHT; y++){
+                Future<ValuedPoint> future = executor.submit(new SinglePointValue(mandelbrot,x,y));
+                tasksSet.add(future);
+            }
+        }
+        for (Future<ValuedPoint> future : tasksSet) {
+            ValuedPoint point = future.get();
+            image.setRGB(point.x,point.y,point.value);
         }
     }
 
