@@ -11,20 +11,21 @@ import java.util.concurrent.*;
 
 public class Main extends JFrame {
 
-    private static final int threadsNumber = 5;
-    private static final int tasksNumber = 100;
-    public static int SCREEN_WIDTH = 800;
+    private static final int threadsNumber = 4;
+    private static final int tasksNumber = 4;
+    public static int SCREEN_WIDTH = 1400;
     public static int SCREEN_HEIGHT = 600;
     private BufferedImage image;
 
     public Main() throws ExecutionException, InterruptedException {
         prepareView();
-        startSimulation();
-        //pixelTask();
     }
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        new Main().setVisible(true);
+        Main main = new Main();
+        main.setVisible(true);
+        main.pixelTask();
+        //main.startSimulation();
     }
 
     @Override
@@ -34,11 +35,12 @@ public class Main extends JFrame {
 
     private void startSimulation() throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(threadsNumber);
-        Set<Future<ArrayList<ValuedPoint>>> tasksSet = new HashSet<Future<ArrayList<ValuedPoint>>>();
+        Set<Future<ArrayList<ValuedPoint>>> tasksSet = new HashSet<>();
 
         Mandelbrot mandelbrot = new Mandelbrot(SCREEN_WIDTH, SCREEN_HEIGHT);
 
         int rowsPerTask = SCREEN_HEIGHT / tasksNumber;
+        long st = System.currentTimeMillis();
         for (int i = 0; i < tasksNumber; i++) {
             int yStart = i*rowsPerTask;
             Future<ArrayList<ValuedPoint>> future = executor.submit(
@@ -48,10 +50,12 @@ public class Main extends JFrame {
         for (Future<ArrayList<ValuedPoint>> future : tasksSet) {
             List<ValuedPoint> points = future.get();
             for(ValuedPoint point : points){
-                System.out.println(point.value);
                 image.setRGB(point.x,point.y,point.value);
             }
+            repaint();
         }
+        long et = System.currentTimeMillis();
+        System.out.println("Total execution time: " + (et - st));
     }
 
     private void pixelTask() throws ExecutionException, InterruptedException {
@@ -59,6 +63,7 @@ public class Main extends JFrame {
         Set<Future<ValuedPoint>> tasksSet = new HashSet<>();
 
         Mandelbrot mandelbrot = new Mandelbrot(SCREEN_WIDTH, SCREEN_HEIGHT);
+        long st = System.currentTimeMillis();
 
         for(int x=0; x<SCREEN_WIDTH; x++){
             for(int y=0; y<SCREEN_HEIGHT; y++){
@@ -69,7 +74,10 @@ public class Main extends JFrame {
         for (Future<ValuedPoint> future : tasksSet) {
             ValuedPoint point = future.get();
             image.setRGB(point.x,point.y,point.value);
+            repaint();
         }
+        long et = System.currentTimeMillis();
+        System.out.println("Total execution time: " + (et - st));
     }
 
     private void prepareView() {
